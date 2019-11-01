@@ -23,7 +23,7 @@
 import sys, os, time
 
 NAME    = "wsolver"
-VERSION = "1.0"
+VERSION = "1.1"
 AUTHOR  = "Toni Helminen"
 
 IGNORE_FILES  = ("makefile", "wsolver.py")
@@ -64,12 +64,19 @@ def go():
   return len(flist)
 
 def main():
-  print "{ # Version\n  name    = \"%s\",\n  version = \"%s\",\n  author  = \"%s\",\n  description \
-= \"Removes whitespaces and replaces tabs with spaces\"\n}\n" % (NAME, VERSION, AUTHOR)
+  print("{ # Version")
+  print("  name        = %s," % (NAME))
+  print("  version     = %s," % (VERSION))
+  print("  author      = %s," % (AUTHOR))
+  print("  description = Removes whitespaces and replaces tabs with spaces")
+  print("}\n")
   print "> Working ...\n"
   start = time.time()
   n = go()
-  print ("{ # Job done!\n  time          = %.3fs,\n  files_touched = %d\n}" % (time.time() - start, n))
+  print("{ # Job done!")
+  print("  time          = %.3fs," % (time.time() - start))
+  print("  files_touched = %d" % (n))
+  print("}")
 
 if __name__ == "__main__":
   main()
