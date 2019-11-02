@@ -3,6 +3,7 @@ whitespace solver
 
 ### Modify
 > IGNORE_FILES = Which files you want to ignore
+
 > TAB_TO_SPACES = Tab to how many spaces
 
 ### Run
