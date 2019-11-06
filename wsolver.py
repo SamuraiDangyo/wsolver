@@ -20,16 +20,17 @@
 # If not, see <http://www.gnu.org/licenses/>.
 ##
 
-import sys, os, time
+import os, time
 
 NAME    = "wsolver"
-VERSION = "1.2"
+VERSION = "1.3"
 AUTHOR  = "Toni Helminen"
 
-IGNORE_FILES  = ("makefile", "wsolver.py")
+IGNORE_FILES  = ("makefile", "wsolver.py", "logo.jpg")
 TAB_TO_SPACES = "  "
 RECURSIVE     = True
 CURRENT_DIR   = "."
+MODE          = "both" # ["both", "tabs", "spaces"]
 
 def file_list_dir():
   return [os.path.join(CURRENT_DIR, f) for f in os.listdir(CURRENT_DIR) if os.path.isfile(os.path.join(CURRENT_DIR, f)) and not f.startswith(IGNORE_FILES)]
@@ -75,9 +76,15 @@ def cleanup_whitespace(flist):
   return space_saved
 
 def go():
-  flist = file_list()
-  space_saved = cleanup_whitespace(flist)
-  tabs = tabs2spaces(flist)
+  flist, space_saved, tabs, mode = file_list(), 0, 0, 3
+  if MODE == "tabs":
+    mode = 1
+  if MODE == "spaces":
+    mode = 2
+  if mode & 1:
+    space_saved = cleanup_whitespace(flist)
+  if mode & 2:
+    tabs = tabs2spaces(flist)
   return {"tabs": tabs, "space_saved": space_saved, "files_touched": len(flist)}
 
 def main():

@@ -10,6 +10,7 @@ whitespace solver
 
 > CURRENT_DIR   = Use different folder   | Default "."
 
+> MODE          = ["both", "tabs", "spaces"] | Default "both"
 
 ### Run
 ```python wsolver.py```
