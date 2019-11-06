@@ -2,9 +2,14 @@
 whitespace solver
 
 ### Modify
-> IGNORE_FILES = Which files you want to ignore
+>>> IGNORE_FILES  = Ignore these files     | Default ("makefile", "wsolver.py")
 
-> TAB_TO_SPACES = Tab to how many spaces
+>>> TAB_TO_SPACES = Tab to how many spaces | Default "  "
+
+>>> RECURSIVE     = Solve recursively      | Default True
+
+>>> CURRENT_DIR   = Use different folder   | Default "."
+
 
 ### Run
 ```python wsolver.py```
@@ -22,4 +27,5 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program.
+
 If not, see <https://www.gnu.org/licenses/>.

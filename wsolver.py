@@ -23,13 +23,18 @@
 import sys, os, time
 
 NAME    = "wsolver"
-VERSION = "1.1"
+VERSION = "1.2"
 AUTHOR  = "Toni Helminen"
 
 IGNORE_FILES  = ("makefile", "wsolver.py")
 TAB_TO_SPACES = "  "
+RECURSIVE     = True
+CURRENT_DIR   = "."
 
-def file_list():
+def file_list_dir():
+  return [os.path.join(CURRENT_DIR, f) for f in os.listdir(CURRENT_DIR) if os.path.isfile(os.path.join(CURRENT_DIR, f)) and not f.startswith(IGNORE_FILES)]
+
+def file_list_recursive():
   flist = []
   for root, dirs, files in os.walk(".", topdown=False):
     for name in files:
@@ -37,18 +42,28 @@ def file_list():
         flist.append(os.path.join(root, name))
   return flist
 
+def file_list():
+  return file_list_recursive() if RECURSIVE else file_list_dir()
+
 def tabs2spaces(flist):
+  tabs = 0
   for name in flist:
     f = open(name, 'r')
     s = f.read()
+    for c in s:
+      if c == '\t':
+        tabs += 1
     s = s.replace("\t", TAB_TO_SPACES)
     f.close()
     f = open(name, 'w')
     f.write(s)
     f.close()
+  return tabs
 
 def cleanup_whitespace(flist):
+  space_saved = 0
   for name in flist:
+    k = os.path.getsize(name)
     f, lines = open(name, "r"), []
     for s in f.readlines():
       lines.append(s.rstrip())
@@ -56,26 +71,30 @@ def cleanup_whitespace(flist):
     f = open(name, "w")
     f.write("\n".join(lines))
     f.close()
+    space_saved += k - os.path.getsize(name)
+  return space_saved
 
 def go():
   flist = file_list()
-  cleanup_whitespace(flist)
-  tabs2spaces(flist)
-  return len(flist)
+  space_saved = cleanup_whitespace(flist)
+  tabs = tabs2spaces(flist)
+  return {"tabs": tabs, "space_saved": space_saved, "files_touched": len(flist)}
 
 def main():
   print("{ # Version")
   print("  name        = %s," % (NAME))
   print("  version     = %s," % (VERSION))
   print("  author      = %s," % (AUTHOR))
-  print("  description = Removes whitespaces and replaces tabs with spaces")
+  print("  description = Removes whitespace + tabs -> spaces")
   print("}\n")
-  print "> Working ...\n"
+  print "{ # Working ...\n}\n"
   start = time.time()
   n = go()
   print("{ # Job done!")
   print("  time          = %.3fs," % (time.time() - start))
-  print("  files_touched = %d" % (n))
+  print("  tabs          = %d," % (n["tabs"]))
+  print("  space_saved   = %d," % (n["space_saved"]))
+  print("  files_touched = %d" % (n["files_touched"]))
   print("}")
 
 if __name__ == "__main__":
