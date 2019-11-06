@@ -2,13 +2,13 @@
 whitespace solver
 
 ### Modify
->>> IGNORE_FILES  = Ignore these files     | Default ("makefile", "wsolver.py")
+> IGNORE_FILES  = Ignore these files     | Default ("makefile", "wsolver.py")
 
->>> TAB_TO_SPACES = Tab to how many spaces | Default "  "
+> TAB_TO_SPACES = Tab to how many spaces | Default "  "
 
->>> RECURSIVE     = Solve recursively      | Default True
+> RECURSIVE     = Solve recursively      | Default True
 
->>> CURRENT_DIR   = Use different folder   | Default "."
+> CURRENT_DIR   = Use different folder   | Default "."
 
 
 ### Run
