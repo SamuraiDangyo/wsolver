@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 ##
-# wsolver, whitespace solver
+# wsolver, a simple whitespace solver
 # Copyright (C) 2019 Toni Helminen
 #
 # wsolver is free software: you can redistribute it and/or modify
@@ -20,30 +20,54 @@
 # If not, see <http://www.gnu.org/licenses/>.
 ##
 
-import os, time
+import os, time, sys, fnmatch
 
 NAME    = "wsolver"
-VERSION = "1.3"
+VERSION = "1.4"
 AUTHOR  = "Toni Helminen"
 
-IGNORE_FILES  = ("makefile", "wsolver.py", "logo.jpg")
+###
+## Modify starts
+###
+
+# Ignore these files | Depends from project to project
+IGNORE_FILES  = ["[mM]akefile", "wsolver.py", "logo.jpg", "LICENSE"] # Unix style matching
+
+# Convert tabs to how many spaces
 TAB_TO_SPACES = "  "
-RECURSIVE     = True
+
+# Directory to start
 CURRENT_DIR   = "."
-MODE          = "both" # ["both", "tabs", "spaces"]
+
+# Recursively go through all files and folders
+RECURSIVE     = True # True | False
+
+# Only cleanup this file
+FILE          = False # ie. "wsolver.py"
+
+# Convert tabs->spaces / remove whitespace / do both
+MODE          = "both" # both / tabs / spaces
+
+###
+## Modify ends
+###
 
 def file_list_dir():
-  return [os.path.join(CURRENT_DIR, f) for f in os.listdir(CURRENT_DIR) if os.path.isfile(os.path.join(CURRENT_DIR, f)) and not f.startswith(IGNORE_FILES)]
+  return [os.path.join(CURRENT_DIR, f) for f in os.listdir(CURRENT_DIR) if os.path.isfile(os.path.join(CURRENT_DIR, f)) and not any(fnmatch.fnmatch(f, pattern) for pattern in IGNORE_FILES)]
 
 def file_list_recursive():
   flist = []
   for root, dirs, files in os.walk(".", topdown=False):
     for name in files:
-      if not name.startswith(IGNORE_FILES):
-        flist.append(os.path.join(root, name))
+      if any(fnmatch.fnmatch(name, pattern) for pattern in IGNORE_FILES):
+        continue
+      flist.append(os.path.join(root, name))
   return flist
 
 def file_list():
+  if FILE != False and os.path.isfile(os.path.join(CURRENT_DIR, FILE)):
+    return [os.path.join(CURRENT_DIR, FILE)]
+    
   return file_list_recursive() if RECURSIVE else file_list_dir()
 
 def tabs2spaces(flist):
@@ -75,7 +99,7 @@ def cleanup_whitespace(flist):
     space_saved += k - os.path.getsize(name)
   return space_saved
 
-def go():
+def work():
   flist, space_saved, tabs, mode = file_list(), 0, 0, 3
   if MODE == "tabs":
     mode = 1
@@ -87,6 +111,17 @@ def go():
     tabs = tabs2spaces(flist)
   return {"tabs": tabs, "space_saved": space_saved, "files_touched": len(flist)}
 
+def go():
+  start = time.time()
+  res = work()
+
+  print("{ # Job done!")
+  print("  time          = %.3fs," % (time.time() - start))
+  print("  tabs          = %d," % (res["tabs"]))
+  print("  space_saved   = %d," % (res["space_saved"]))
+  print("  files_touched = %d" % (res["files_touched"]))
+  print("}")
+
 def main():
   print("{ # Version")
   print("  name        = %s," % (NAME))
@@ -94,15 +129,9 @@ def main():
   print("  author      = %s," % (AUTHOR))
   print("  description = Removes whitespace + tabs -> spaces")
   print("}\n")
-  print "{ # Working ...\n}\n"
-  start = time.time()
-  n = go()
-  print("{ # Job done!")
-  print("  time          = %.3fs," % (time.time() - start))
-  print("  tabs          = %d," % (n["tabs"]))
-  print("  space_saved   = %d," % (n["space_saved"]))
-  print("  files_touched = %d" % (n["files_touched"]))
-  print("}")
+
+  print ("{ # Working ...\n}\n")
+  go()
 
 if __name__ == "__main__":
   main()
